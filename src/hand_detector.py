@@ -1,4 +1,6 @@
 # src/hand_detector.py
+# MediaPipe hand landmark detection
+
 import mediapipe as mp
 import cv2
 from src.config import (
@@ -18,14 +20,11 @@ hands = mp_hands.Hands(
 
 def detect_landmarks(frame):
     results = hands.process(frame)
-
     if not results.multi_hand_landmarks:
         return None
-
     landmarks = []
     for lm in results.multi_hand_landmarks[0].landmark:
         landmarks.extend([lm.x, lm.y, lm.z])
-
     return landmarks
 
 def draw_landmarks(frame_bgr, frame_rgb):
@@ -36,4 +35,4 @@ def draw_landmarks(frame_bgr, frame_rgb):
                 frame_bgr, hand,
                 mp_hands.HAND_CONNECTIONS
             )
-    return frame_bgr
+    return frame_bgr, results.multi_hand_landmarks is not None

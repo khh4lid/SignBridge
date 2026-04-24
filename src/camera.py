@@ -1,4 +1,6 @@
 # src/camera.py
+# Handles Arducam IMX519 via picamera2
+
 from picamera2 import Picamera2
 import time
 from src.config import (
@@ -19,7 +21,6 @@ def get_camera():
     cam.start()
     time.sleep(1)
 
-    # Autofocus
     try:
         cam.set_controls({
             "AfMode":  CAMERA_AF_MODE,
@@ -27,10 +28,10 @@ def get_camera():
         })
         time.sleep(2)
         print("OK - Autofocus enabled")
-    except:
-        print("AF not available")
+    except Exception as e:
+        print(f"AF not available: {e}")
 
-    print(f"OK - {CAMERA_WIDTH}x{CAMERA_HEIGHT} @ {CAMERA_FPS}fps")
+    print(f"OK - Camera: {CAMERA_WIDTH}x{CAMERA_HEIGHT} @ {CAMERA_FPS}fps")
     return cam
 
 def get_frame(cam):
@@ -38,4 +39,4 @@ def get_frame(cam):
 
 def release_camera(cam):
     cam.stop()
-    print("Camera stopped")
+    print("OK - Camera released")
