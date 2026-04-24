@@ -56,7 +56,7 @@ except Exception as e:
 
 # ── Step 3: Prediction speed ──────────────────────
 print("\n[3] Prediction speed...")
-dummy = [0.5] * 63
+dummy = [0.5] * 78
 t = time.time()
 for _ in range(100):
     model.predict([dummy])
