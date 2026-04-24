@@ -16,7 +16,7 @@ MP_TRACKING     = 0.5
 FRAME_SKIP      = 2
 
 # ── Model ─────────────────────────────────────────
-MODEL_PATH      = "model/sign_model.pkl"       # ← الاسم الصح
+MODEL_PATH      = "model/sign_model.pkl"      
 ENCODER_PATH    = "model/label_encoder.pkl"
 MIN_CONFIDENCE  = 0.75
 
