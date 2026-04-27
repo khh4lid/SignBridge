@@ -510,67 +510,10 @@ pip install -r requirements.txt
 ---
 
 ## 📁 Project Structure
-
-SignBridge/
-│
-├── 📄 README.md
-├── 📄 requirements.txt
-├── 🐍 app.py                        ← Web demo (FastAPI)
-│
-├── 📊 data/
-│   ├── Arabic_Sign_Language_Letters_Dataset.csv
-│   └── README.md
-│
-├── 🧠 model/
-│   ├── train.py                     ← Training script
-│   ├── evaluate.py                  ← Per-letter evaluation
-│   ├── sign_model.pkl               ← Trained model (Git LFS)
-│   └── label_encoder.pkl            ← Label encoder
-│
-├── ⚙️ src/
-│   ├── main.py                      ← Headless pipeline
-│   ├── interface.py                 ← Full UI with camera
-│   ├── camera.py                    ← Arducam picamera2
-│   ├── hand_detector.py             ← MediaPipe detection
-│   ├── predictor.py                 ← 78-feature prediction
-│   ├── word_builder.py              ← Letter → word logic
-│   ├── text_to_speech.py            ← Arabic TTS + Bluetooth
-│   └── config.py                    ← All settings
-│
-├── 🧪 tests/
-│   ├── images/                      ← Real hand sign photos
-│   ├── test_model.py                ← Model accuracy test
-│   └── test_pipeline.py             ← End-to-end latency test
-│
-├── 📜 scripts/
-│   ├── setup.sh                     ← One-command install
-│   └── autostart.sh                 ← Auto-start on boot
-│
-└── 📁 docs/
-├── results/                     ← Detection result photos
-├── architecture_diagram.png     ← System architecture
-├── guide.png                    ← Usage guide
-├── letters.png                  ← Arabic letters reference
-├── VideoDemo.gif                ← Live demo recording
-└── Web.png                      ← Web interface screenshot
-
----
+![Structure](docs/project_structure.png)
 
 ## 📊 Results
-
-<div align="center">
-╔══════════════════════════════════════════╗
-║   Overall Accuracy    :   94.3%          ║
-║   Training Samples    :   5,711          ║
-║   Testing Samples     :   1,428          ║
-║   Features per frame  :   78             ║
-║   Prediction Speed    :   33.8ms  ⚡     ║
-║   Camera FPS          :   60fps          ║
-║   End-to-End Latency  :   < 1 second     ║
-║   Letters Supported   :   31             ║
-╚══════════════════════════════════════════╝
-
-</div>
+![Results](docs/results_metrics.png)
 
 ---
 ## 🚀 Future Product Vision
