@@ -98,6 +98,13 @@ Over **430 million people** worldwide live with hearing or speech disabilities. 
 |---|---|
 | ![Detection](docs/results/Alef_1pct.jpg) | ![Web](docs/results/Beh_1pct.jpg) |
 
+
+| Live Detection | Web Interface |
+|---|---|
+| ![Detection1](docs/Testing_code_sample.png) | ![Web1](docs/Web.png) |
+
+
+
 </div>
 
 ### Features
