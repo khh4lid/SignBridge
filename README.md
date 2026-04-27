@@ -114,25 +114,7 @@ Over **430 million people** worldwide live with hearing or speech disabilities. 
 | 🌐 Web Demo | Browser-based demo on HuggingFace |
 
 ### System Architecture
-[Deaf User performs hand sign]
-↓
-[Arducam IMX519 — 1080p @ 60fps]
-↓
-[Raspberry Pi 5 — 4GB RAM Quad-Core]
-↓
-[MediaPipe — extracts 21 hand landmarks]
-↓
-[Feature Engineering — 63 positions + 15 joint angles = 78 features]
-↓
-[RandomForest Classifier — 300 trees — 94%+ accuracy]
-↓
-[Word Builder — hold 1.5s to confirm each letter]
-↓
-[gTTS (online) / espeak (offline) — Arabic TTS]
-↓
-[Bluetooth Speaker outputs Arabic speech]
-↓
-[Listener understands ✅]
+![SignBridge Architecture](docs/architecture_diagram.png)
 
 ---
 
