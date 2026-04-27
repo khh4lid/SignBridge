@@ -94,7 +94,7 @@ Over **430 million people** worldwide live with hearing or speech disabilities. 
 
 <div align="center">
 
-| Live Detection | Web Interface |
+| Alef letter حرف ا | Beh letter حرف ب |
 |---|---|
 | ![Detection](docs/results/Alef_1pct.jpg) | ![Web](docs/results/Beh_1pct.jpg) |
 
