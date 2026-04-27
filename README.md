@@ -75,3 +75,422 @@ SignBridge is a **portable, low-cost, real-time device** that translates Arabic 
 ### Problem Statement
 
 Over **430 million people** worldwide live with hearing or speech disabilities. In daily interactions — hospitals, schools, pharmacies — deaf and mute individuals face a significant communication barrier with people who do not understand sign language.
+
+❌ No affordable real-time solution exists
+❌ Professional interpreters are expensive
+❌ Most apps require internet connectivity
+❌ Existing solutions don't support Arabic Sign Language
+
+### Our Solution
+
+✅ Real-time translation < 1 second
+✅ Fully offline — no internet needed
+✅ Affordable hardware < 500 SAR
+✅ Supports 31 Arabic letters
+✅ Portable — fits in your hand
+✅ Web demo accessible worldwide
+
+### Visual Demo
+
+<div align="center">
+
+| Live Detection | Web Interface |
+|---|---|
+| ![Detection](docs/results/Alef_1pct.jpg) | ![Web](docs/results/Beh_1pct.jpg) |
+
+</div>
+
+### Features
+
+| Feature | Details |
+|---|---|
+| 🤟 Sign Recognition | 31 Arabic letters + special commands |
+| ⚡ Real-Time | < 1 second end-to-end latency |
+| 🧠 AI Accuracy | 94%+ on test set |
+| 🔊 Arabic Speech | Natural Arabic voice output |
+| 📵 Offline | Works without internet |
+| 🗑️ Delete | Raise 2 hands to delete last word |
+| ➡️ Space | Laa sign moves word to sentence |
+| 🌐 Web Demo | Browser-based demo on HuggingFace |
+
+### System Architecture
+[Deaf User performs hand sign]
+↓
+[Arducam IMX519 — 1080p @ 60fps]
+↓
+[Raspberry Pi 5 — 4GB RAM Quad-Core]
+↓
+[MediaPipe — extracts 21 hand landmarks]
+↓
+[Feature Engineering — 63 positions + 15 joint angles = 78 features]
+↓
+[RandomForest Classifier — 300 trees — 94%+ accuracy]
+↓
+[Word Builder — hold 1.5s to confirm each letter]
+↓
+[gTTS (online) / espeak (offline) — Arabic TTS]
+↓
+[Bluetooth Speaker outputs Arabic speech]
+↓
+[Listener understands ✅]
+
+---
+
+## 🛠️ Hardware Setup
+
+### Required Components
+
+| Component | Model | Purpose |
+|---|---|---|
+| Single Board Computer | Raspberry Pi 5 (4GB) | Main processor |
+| Camera | Arducam Autofocus IMX519 | Hand capture 60fps |
+| Speaker | Bluetooth A036Plus | Audio output |
+| Storage | MicroSD 32GB Class 10 | OS + project |
+| Power | USB-C 5V 3A | Power supply |
+
+### Camera Configuration
+
+```python
+# Sensor modes available on IMX519:
+# Mode 0: 1280x720  @ 80fps  — fastest
+# Mode 1: 1920x1080 @ 60fps  — best balance ✅
+# Mode 2: 2328x1748 @ 30fps  — widest FOV
+# Mode 3: 3840x2160 @ 18fps  — 4K
+# Mode 4: 4656x3496 @ 9fps   — max resolution
+
+# We use Mode 1 — 1080p 60fps
+cam.configure(cam.create_video_configuration(
+    main={"size": (1920, 1080), "format": "RGB888"},
+    controls={"FrameRate": 60, "AfMode": 2}  # Continuous autofocus
+))
+```
+
+### Bluetooth Speaker Setup
+
+```bash
+# Pair speaker
+bluetoothctl
+> scan on
+> pair 41:42:D2:11:64:F7
+> connect 41:42:D2:11:64:F7
+
+# Set as default output
+pactl set-default-sink bluez_output.41_42_D2_11_64_F7.1
+pactl set-sink-volume bluez_output.41_42_D2_11_64_F7.1 80%
+```
+
+---
+
+## 🧠 AI Model
+
+### Dataset
+
+| Property | Value |
+|---|---|
+| Source | Arabic Sign Language Letters Dataset (Kaggle) |
+| Total Samples | 7,139 |
+| Letters | 31 Arabic letters |
+| Train Split | 80% (5,711 samples) |
+| Test Split | 20% (1,428 samples) |
+
+### Feature Extraction
+
+The model uses **78 features** per frame:
+
+```python
+def extract_features(hand_landmarks):
+    wrist    = hand_landmarks.landmark[0]
+    features = []
+
+    # 63 features — normalized positions relative to wrist
+    for lm in hand_landmarks.landmark:
+        features.extend([
+            lm.x - wrist.x,   # relative x
+            lm.y - wrist.y,   # relative y
+            lm.z - wrist.z    # relative z (depth)
+        ])
+
+    # 15 features — joint angles between finger segments
+    features.extend(compute_angles(hand_landmarks.landmark))
+
+    return features  # total: 78
+```
+21 landmarks × 3 (x,y,z) = 63 position features
+15 joint angles            = 15 angle features
+Total                      = 78 features
+
+### Training
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(
+    n_estimators  = 300,      # number of trees
+    class_weight  = "balanced",
+    random_state  = 42,
+    n_jobs        = -1        # use all CPU cores
+)
+model.fit(X_train, y_train)
+```
+
+Run training:
+```bash
+source ~/sign_project/bin/activate
+python3 model/train.py
+```
+
+### Evaluation Results
+
+Overall Accuracy  : 94.3%
+Prediction Speed  : 33.8ms per frame
+Status            : EXCELLENT — real-time ready
+
+| Letter | Accuracy | Letter | Accuracy |
+|---|---|---|---|
+| أ Alef | 99% ✅ | ب Beh | 97% ✅ |
+| ت Teh | 96% ✅ | ع Ain | 95% ✅ |
+| ض Dad | 88% ✅ | ظ Zah | 85% ✅ |
+
+---
+
+## ⚙️ Software Pipeline
+
+### Camera Module
+
+```python
+# src/camera.py
+from picamera2 import Picamera2
+
+def get_camera():
+    cam = Picamera2()
+    cam.configure(cam.create_video_configuration(
+        main={"size": (1920, 1080), "format": "RGB888"},
+        controls={"FrameRate": 60}
+    ))
+    cam.start()
+    cam.set_controls({"AfMode": 2, "AfSpeed": 1})
+    return cam
+```
+
+### Hand Detection
+
+```python
+# src/hand_detector.py — MediaPipe extracts 21 landmarks
+hands = mp.solutions.hands.Hands(
+    model_complexity         = 0,    # fast mode
+    max_num_hands            = 2,    # supports delete gesture
+    min_detection_confidence = 0.75
+)
+```
+
+### Predictor
+
+```python
+# src/predictor.py
+def predict_raw(hand_landmarks):
+    features   = extract_features(hand_landmarks)  # 78 features
+    confidence = model.predict_proba([features]).max()
+    label      = encoder.inverse_transform(model.predict([features]))[0]
+    arabic     = ARABIC_MAP.get(label, label)
+    return label, arabic, confidence
+```
+
+### Word Builder
+
+```python
+# Logic: hold same sign for 1.5s = letter confirmed
+# Hold "Laa" sign = word moves to sentence
+# Raise 2 hands   = delete last word
+```
+
+أ (held 1.5s) → أ
+ه (held 1.5s) → أه
+ل (held 1.5s) → أهل
+لا (held 1.5s) → "أهل" spoken 🔊
+
+### Text to Speech
+
+```python
+# src/text_to_speech.py
+# Online  → gTTS (high quality)
+# Offline → espeak -v ar+f3 (instant fallback)
+
+def speak(text):
+    try:
+        tts = gTTS(text=text, lang='ar', slow=False)
+        tts.save("/tmp/output.mp3")
+        pygame.mixer.music.play()
+    except:
+        os.system(f'espeak -v ar+f3 -s 130 "{text}"')
+```
+
+---
+
+## 🌐 Web Demo
+
+### FastAPI Backend
+
+```python
+# app.py — POST /predict
+@app.post("/predict")
+async def predict(file: UploadFile):
+    img     = decode_image(file)
+    results = hands.process(img)
+    feats   = extract_features(results)          # 78 features
+    label   = model.predict([feats])[0]          # Arabic letter
+    return {"label": label, "arabic": arabic, "confidence": conf}
+```
+
+### Frontend Interface
+
+The web interface features:
+- **Live webcam** detection via browser
+- **Word builder** with progress bar
+- **Arabic TTS** via Web Speech API
+- **Settings** — hold time, confidence, space sign
+- **Side panels** — usage guide + letters reference
+
+### How to Use
+Step 1: Open the web demo link
+Step 2: Click "Start Camera" and allow camera access
+Step 3: Show a hand sign to the camera
+Step 4: Hold the sign for 1.5 seconds → letter confirmed
+Step 5: Repeat to build a word
+Step 6: Show "Laa (لا)" sign → word spoken aloud 🔊
+
+**Special Commands:**
+
+| Command | Action |
+|---|---|
+| Hold **Laa (لا)** sign | Move word to sentence + speak |
+| Raise **2 hands** | Delete current word |
+| Press **C** on keyboard | Clear everything |
+
+---
+
+## 🚀 Installation & Running
+
+### Quick Start
+
+```bash
+git clone https://github.com/khh4lid/SignBridge
+cd SignBridge
+bash scripts/setup.sh
+```
+
+### Run on Raspberry Pi
+
+```bash
+# Activate environment
+source ~/sign_project/bin/activate
+
+# Run with full UI (requires display)
+export DISPLAY=:0
+python3 src/interface.py
+
+# Run headless (terminal only)
+python3 src/main.py
+
+# Auto-start on boot
+bash scripts/autostart.sh
+```
+
+### Run Web Demo Locally
+
+```bash
+pip install fastapi uvicorn python-multipart mediapipe \
+    scikit-learn joblib numpy opencv-python-headless
+
+uvicorn app:app --host 0.0.0.0 --port 8000
+# Open http://localhost:8000
+```
+
+### Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 📁 Project Structure
+SignBridge/
+│
+├── README.md
+├── requirements.txt
+├── app.py                        ← Web demo (FastAPI)
+│
+├── data/
+│   ├── Arabic_Sign_Language_Letters_Dataset.csv
+│   └── README.md
+│
+├── model/
+│   ├── train.py                  ← Training script
+│   ├── evaluate.py               ← Per-letter evaluation
+│   ├── sign_model.pkl            ← Trained model (Git LFS)
+│   └── label_encoder.pkl         ← Label encoder
+│
+├── src/
+│   ├── main.py                   ← Headless pipeline
+│   ├── interface.py              ← Full UI with camera
+│   ├── camera.py                 ← Arducam picamera2
+│   ├── hand_detector.py          ← MediaPipe detection
+│   ├── predictor.py              ← 78-feature prediction
+│   ├── word_builder.py           ← Letter → word logic
+│   ├── text_to_speech.py         ← Arabic TTS + Bluetooth
+│   └── config.py                 ← All settings
+│
+├── tests/
+│   ├── images/                   ← Real hand sign photos
+│   ├── test_model.py             ← Model accuracy test
+│   └── test_pipeline.py          ← End-to-end latency test
+│
+├── scripts/
+│   ├── setup.sh                  ← One-command install
+│   └── autostart.sh              ← Auto-start on boot
+│
+└── docs/
+├── results/                  ← Detection result photos
+└── architecture_diagram.png
+
+---
+
+## 📊 Results
+┌─────────────────────────────────────┐
+│  Overall Accuracy    :  94.3%       │
+│  Training Samples    :  5,711       │
+│  Testing Samples     :  1,428       │
+│  Features per frame  :  78          │
+│  Prediction Speed    :  33.8ms      │
+│  Camera FPS          :  60fps       │
+│  End-to-End Latency  :  < 1 second  │
+│  Letters Supported   :  31          │
+└─────────────────────────────────────┘
+
+---
+
+## 📈 Impact
+
+430M+    people worldwide can benefit
+< 1 sec  translation speed
+< 500 SR total device cost
+31       Arabic letters supported
+0        internet connection required
+
+---
+
+<div align="center">
+
+## 🏆 Hackathon Darb 2025
+
+**[🌐 Try Live Demo](https://huggingface.co/spaces/Khaled0wleed/SignBridge)**
+·
+**[⭐ Star this repo](https://github.com/khh4lid/SignBridge)**
+·
+**[📧 Contact](https://github.com/khh4lid)**
+
+*Built with ❤️ by Team SignBridge*
+
+</div>
+
+
