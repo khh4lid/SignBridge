@@ -101,26 +101,7 @@ def draw_arabic_fit(img, text, box_x, box_y, box_w,
                 font_size=font_size, color=color)
 
 # ── TTS ───────────────────────────────────────────
-import pygame
-pygame.mixer.init()
-
-def speak(text):
-    if not text or not text.strip():
-        return
-    try:
-        import requests
-        requests.get("https://google.com", timeout=2)
-        from gtts import gTTS
-        tts = gTTS(text=text, lang='ar', slow=False)
-        tts.save("/tmp/output.mp3")
-        pygame.mixer.music.load("/tmp/output.mp3")
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-    except:
-        import os
-        os.system(f'espeak -v ar+f3 -s 130 "{text}"')
-
+from src.text_to_speech import speak
 # ── Camera (picamera2) ────────────────────────────
 print("Starting camera...")
 cam = Picamera2()
