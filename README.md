@@ -150,9 +150,9 @@
 |:---:|:---:|
 | ![Alef](docs/results/Alef_1pct.jpg) | ![Beh](docs/results/Beh_1pct.jpg) |
 
-### Hardware Product
+### System flow
 
-![Product](docs/Product.jpg)
+![Product](docs/Flow.png)
 
 </div>
 
