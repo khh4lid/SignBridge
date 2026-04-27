@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/logo.png" alt="SignBridge Logo" width="200"/>
+<img src="docs/logo.png" alt="SignBridge Logo" width="500"/>
 
-# 🤟 SignBridge
+# SignBridge
 
 ### Real-Time Arabic Sign Language to Speech Translation
 
