@@ -119,7 +119,7 @@ Over **430 million people** worldwide live with hearing or speech disabilities. 
 ---
 
 ## 🛠️ Hardware Setup
-![Product](docs/Product.png)
+![Product](docs/Product.jpg)
 ### Required Components
 
 | Component | Model | Purpose |
