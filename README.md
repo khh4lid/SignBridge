@@ -573,6 +573,57 @@ SignBridge/
 </div>
 
 ---
+## 🚀 Future Product Vision
+
+<div align="center">
+
+![SignBridge Future Product](docs/Future_product.png)
+
+### SignBridge — The Standalone Device
+
+The current prototype runs on **Raspberry Pi 5**. The future vision is a **dedicated standalone device** — compact, elegant, and ready for mass deployment.
+
+</div>
+
+<div align="center">
+
+| Flow 1 — Sign to Voice | Flow 2 — Voice to Text |
+|:---:|:---:|
+| 🤟 Hand Sign → 📷 Camera → 🧠 AI → 🔊 Speaker | 🎤 Voice → 📱 Microphone → 🧠 AI → 📺 Screen |
+| Deaf person signs → device speaks | Hearing person talks → screen shows text |
+
+</div>
+
+### Planned Hardware Features
+
+| Feature | Details |
+|:---:|:---|
+| 📷 **Wide-angle Camera** | Built-in autofocus lens |
+| 🖥️ **OLED Screen** | Shows translated Arabic text |
+| 🔊 **Built-in Speaker** | Mesh grille front-facing |
+| 🔋 **Battery Powered** | Portable — works anywhere |
+| 📡 **Two-Way Mode** | Sign Mode + Voice Mode |
+| 🎨 **Premium Design** | Matte white + purple LED ring |
+| 💰 **Target Price** | < 500 SAR for mass market |
+
+### Deployment Roadmap
+2025  →  Hackathon Prototype (Raspberry Pi 5)
+2026  →  Pilot Testing in hospitals and schools
+2027  →  Dedicated hardware device production
+2028  →  Mass deployment across Saudi Arabia
+
+### Target Deployment Locations
+
+| Location | Use Case |
+|:---:|:---|
+| 🏥 Hospitals | Patient communication with doctors |
+| 💊 Pharmacies | Prescription and medication requests |
+| 🏫 Schools | Deaf students communicating with teachers |
+| 🏛️ Government offices | Public services accessibility |
+| 🛒 Retail stores | Shopping assistance |
+
+---
+
 
 ## 📈 Impact
 
