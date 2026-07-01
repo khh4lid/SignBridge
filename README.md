@@ -19,7 +19,7 @@
 
 </div>
 
----
+-----
 
 ## 📋 Table of Contents
 
@@ -59,7 +59,7 @@
 - **[📊 Results](#-results)**
 - **[📈 Impact](#-impact)**
 
----
+----
 
 ## 👥 Team Members
 
@@ -75,7 +75,7 @@
 
 </div>
 
----
+----
 
 ## 🎯 General
 
@@ -130,7 +130,7 @@
 
 </div>
 
----
+-----
 
 ## 📸 Visual Demo
 
@@ -156,7 +156,7 @@
 
 </div>
 
----
+----
 
 ## 📖 Usage Guide
 
@@ -203,7 +203,7 @@ then Laa → spoken 🔊
 
 </div>
 
----
+----
 
 ## 🛠️ Hardware Setup
 
@@ -341,7 +341,7 @@ python3 model/train.py
 
 </div>
 
----
+----
 
 ## ⚙️ Software Pipeline
 
@@ -461,7 +461,7 @@ async def predict(file: UploadFile):
 
 </div>
 
----
+----
 
 ## 🚀 Installation & Running
 
@@ -507,7 +507,7 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 pip install -r requirements.txt
 ```
 
----
+----
 
 ## 📁 Project Structure
 ![Structure](docs/project_structure.png)
@@ -565,7 +565,7 @@ The current prototype runs on **Raspberry Pi 5**. The future vision is a **dedic
 | 🏛️ Government offices | Public services accessibility |
 | 🛒 Retail stores | Shopping assistance |
 
----
+----
 
 
 ## 📈 Impact
@@ -582,7 +582,7 @@ The current prototype runs on **Raspberry Pi 5**. The future vision is a **dedic
 
 </div>
 
----
+----
 
 <div align="center">
 
